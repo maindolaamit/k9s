@@ -222,3 +222,34 @@ func (s *SelectTable) IsMarked(item string) bool {
 	_, ok := s.marks[item]
 	return ok
 }
+
+// PageUp moves selection up by page size (half the visible rows).
+func (s *SelectTable) PageUp() {
+	row, col := s.GetSelection()
+	_, _, _, height := s.GetInnerRect()
+	pageSize := height / 2
+	if pageSize < 1 {
+		pageSize = 1
+	}
+	newRow := row - pageSize
+	if newRow < 1 {
+		newRow = 1
+	}
+	s.Select(newRow, col)
+}
+
+// PageDown moves selection down by page size (half the visible rows).
+func (s *SelectTable) PageDown() {
+	row, col := s.GetSelection()
+	_, _, _, height := s.GetInnerRect()
+	pageSize := height / 2
+	if pageSize < 1 {
+		pageSize = 1
+	}
+	maxRow := s.GetRowCount() - 1
+	newRow := row + pageSize
+	if newRow > maxRow {
+		newRow = maxRow
+	}
+	s.Select(newRow, col)
+}

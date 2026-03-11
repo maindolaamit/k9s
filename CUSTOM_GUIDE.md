@@ -311,6 +311,46 @@ Suggested customizations for your workflow:
 
 ---
 
+## Implemented Custom Keybindings
+
+### Navigation (Vim-style)
+- **Ctrl-U**: Page Up (half-page scroll up)
+- **Ctrl-D**: Page Down (half-page scroll down)
+  - *Changed from:* Ctrl-B (page up), Ctrl-F (page down)
+  - *Files modified:* `internal/ui/select_table.go`, `internal/view/table.go`
+
+### Clear Filter
+- **Ctrl-L**: Clear filter/command
+- **Ctrl-Q**: Clear filter (backup)
+  - *Changed from:* Ctrl-U
+  - *Files modified:* `internal/ui/app.go`
+
+### Delete Resource
+- **Shift-D**: Delete resource (normal delete)
+  - *Changed from:* Ctrl-D
+  - *Files modified:* Multiple view files (browser.go, workload.go, xray.go, etc.)
+
+### Delete AsUser (Privileged Delete)
+- **Ctrl-K**: Delete resource with impersonation
+  - *Requires:* `asUser` configured in `~/.config/k9s/config.yaml`
+  - *Example config:*
+    ```yaml
+    k9s:
+      asUser: app00739-sudo
+    ```
+  - *Files modified:* `internal/config/k9s.go`, view files
+
+### Configuration
+Add the following to your `~/.config/k9s/config.yaml`:
+```yaml
+k9s:
+  asUser: app00739-sudo  # User for Ctrl-K privileged delete
+```
+
+**Note:** The AsUser delete (Ctrl-K) feature currently shows a warning that it's not fully implemented. Full impersonation support for delete operations is planned for future development.
+
+---
+
 ## Tips
 
 - Test with `k9s-custom` before replacing your main binary

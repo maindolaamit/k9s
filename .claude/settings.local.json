@@ -4,7 +4,9 @@
       "Bash(k9s version:*)",
       "Bash(make build:*)",
       "Bash(ls:*)",
-      "Bash(go version:*)"
+      "Bash(go version:*)",
+      "Bash(grep:*)",
+      "Bash(./execs/k9s:*)"
     ]
   }
 }

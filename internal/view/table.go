@@ -108,6 +108,16 @@ func (t *Table) keyboard(evt *tcell.EventKey) *tcell.EventKey {
 		}
 	}
 
+	// Handle vim-style page navigation
+	if key == tcell.KeyCtrlU {
+		t.Table.PageUp()
+		return nil
+	}
+	if key == tcell.KeyCtrlD {
+		t.Table.PageDown()
+		return nil
+	}
+
 	if key == tcell.KeyUp || key == tcell.KeyDown {
 		return evt
 	}

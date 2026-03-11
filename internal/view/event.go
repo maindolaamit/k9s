@@ -28,7 +28,7 @@ func NewEvent(gvr *client.GVR) ResourceViewer {
 }
 
 func (e *Event) bindKeys(aa *ui.KeyActions) {
-	aa.Delete(tcell.KeyCtrlD, ui.KeyE, ui.KeyA)
+	aa.Delete(ui.KeyShiftD, ui.KeyE, ui.KeyA)
 	aa.Bulk(ui.KeyMap{
 		tcell.KeyCtrlZ: ui.NewKeyAction("Toggle Faults", e.toggleFaults, false),
 	})

@@ -48,7 +48,7 @@ func (c *Context) bindKeys(aa *ui.KeyActions) {
 
 func (c *Context) bindDangerousKeys(aa *ui.KeyActions) {
 	aa.Add(ui.KeyR, ui.NewKeyAction("Rename", c.renameCmd, true))
-	aa.Add(tcell.KeyCtrlD, ui.NewKeyAction("Delete", c.deleteCmd, true))
+	aa.Add(ui.KeyShiftD, ui.NewKeyAction("Delete", c.deleteCmd, true))
 }
 
 func (c *Context) renameCmd(evt *tcell.EventKey) *tcell.EventKey {

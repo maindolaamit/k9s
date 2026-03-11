@@ -44,7 +44,12 @@ func (w *Workload) bindDangerousKeys(aa *ui.KeyActions) {
 				Visible:   true,
 				Dangerous: true,
 			}),
-		tcell.KeyCtrlD: ui.NewKeyActionWithOpts("Delete", w.deleteCmd,
+		ui.KeyShiftD: ui.NewKeyActionWithOpts("Delete", w.deleteCmd,
+			ui.ActionOpts{
+				Visible:   true,
+				Dangerous: true,
+			}),
+		tcell.KeyCtrlK: ui.NewKeyActionWithOpts("Delete AsUser", w.asUserDeleteCmd,
 			ui.ActionOpts{
 				Visible:   true,
 				Dangerous: true,
@@ -100,6 +105,25 @@ func (w *Workload) deleteCmd(evt *tcell.EventKey) *tcell.EventKey {
 		}
 		w.resourceDelete(selections, msg)
 	}
+
+	return nil
+}
+
+func (w *Workload) asUserDeleteCmd(evt *tcell.EventKey) *tcell.EventKey {
+	asUser := w.App().Config.K9s.AsUser
+	if asUser == "" {
+		w.App().Flash().Warn("AsUser not configured. Set 'asUser' in k9s config to use this feature.")
+		return nil
+	}
+
+	selections := w.GetTable().GetSelectedItems()
+	if len(selections) == 0 {
+		return evt
+	}
+
+	// TODO: Implement impersonation for delete operations
+	// For now, show warning that this is not yet fully implemented
+	w.App().Flash().Warnf("AsUser delete not yet implemented. Use regular delete (Shift-D) for now.")
 
 	return nil
 }

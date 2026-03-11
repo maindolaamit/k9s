@@ -169,11 +169,11 @@ func (*Help) showNav() model.MenuHints {
 			Description: "Goto Bottom",
 		},
 		{
-			Mnemonic:    "Ctrl-b",
+			Mnemonic:    "Ctrl-u",
 			Description: "Page Up",
 		},
 		{
-			Mnemonic:    "Ctrl-f",
+			Mnemonic:    "Ctrl-d",
 			Description: "Page Down",
 		},
 		{
@@ -267,7 +267,7 @@ func (*Help) showGeneral() model.MenuHints {
 			Description: "Reload",
 		},
 		{
-			Mnemonic:    "Ctrl-u",
+			Mnemonic:    "Ctrl-l",
 			Description: "Command Clear",
 		},
 		{
