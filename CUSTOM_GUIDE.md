@@ -346,6 +346,13 @@ Suggested customizations for your workflow:
   - *Default:* Disabled (available for your custom shortcuts)
   - *Files modified:* `internal/config/k9s.go`, `internal/view/app.go`, `internal/view/help.go`
 
+### Sort Menu (Unified Sorting)
+- **m**: Opens Sort Menu popup
+  - Menu options: `[n] Name`, `[a] Age`, `[s] Status`
+  - *Changed from:* Shift-A (Age), Shift-N (Name), Shift-S (Status)
+  - *Benefit:* Single key to remember, easier to discover sort options
+  - *Files modified:* `internal/view/table.go`
+
 ### Configuration
 Add the following to your `~/.config/k9s/config.yaml`:
 ```yaml
