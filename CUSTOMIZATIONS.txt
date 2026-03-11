@@ -1,0 +1,103 @@
+# K9s Custom Modifications Tracker
+# Document all customizations here for easy maintenance
+
+## Created: 2026-03-10
+
+---
+
+## Keybinding Overrides
+
+### Planned Changes
+- [ ] Override quit shortcut (currently Ctrl-C)
+- [ ] Add Ctrl-N for quick namespace jump to app00739
+- [ ] Override help (currently ?) to a different key
+- [ ] Add custom shortcuts for frequently used namespaces
+
+### Implemented Changes
+(None yet - add as you implement)
+
+---
+
+## Default Settings
+
+### Planned Changes
+- [ ] Set default refresh rate
+- [ ] Set default namespace to app00739
+- [ ] Set default view to pods
+
+### Implemented Changes
+(None yet - add as you implement)
+
+---
+
+## Custom Views/Features
+
+### Planned
+- [ ] Custom dashboard view
+- [ ] Enhanced deployment view with auto-backup prompts
+- [ ] Custom secret viewer with sudo integration
+
+### Implemented
+(None yet - add as you implement)
+
+---
+
+## Configuration
+
+### Build Configuration
+- Branch: custom-keybindings
+- Base version: v0.50.18+
+- Custom version suffix: -custom
+
+### Sudo Integration
+- Using: --as app00739-sudo
+- Applies to: delete, edit, scale operations
+
+---
+
+## Maintenance Log
+
+### 2026-03-10
+- Initial fork created
+- Added CUSTOMIZATION.md guide
+- Added build.sh script
+- Created customization tracking file
+
+---
+
+## Testing Checklist
+
+Before installing custom build:
+- [ ] Build completes without errors
+- [ ] Version shows correctly (k9s version)
+- [ ] Custom shortcuts work as expected
+- [ ] No conflicts with existing plugins
+- [ ] Can access all resource types
+- [ ] Sudo operations still work with --as flag
+
+---
+
+## Rollback Plan
+
+If custom build has issues:
+1. Reinstall original: `brew reinstall derailed/k9s/k9s`
+2. Or use backup: `cp /opt/homebrew/bin/k9s.bak /opt/homebrew/bin/k9s`
+
+---
+
+## Future Ideas
+
+- [ ] Integration with custom deployment scripts
+- [ ] Enhanced backup/restore workflow in UI
+- [ ] Custom resource filters saved in code
+- [ ] Auto-detection of project namespaces
+- [ ] Custom metrics dashboard
+
+---
+
+## Notes
+
+- Always test in /usr/local/bin/k9s-custom before replacing main binary
+- Keep this file updated with each change
+- Document file paths and line numbers for each modification
+- Take backups before major refactoring
