@@ -7,7 +7,9 @@
       "Bash(go version:*)",
       "Bash(grep:*)",
       "Bash(./execs/k9s:*)",
-      "Bash(./build.sh:*)"
+      "Bash(./build.sh:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: add keyboard shortcuts \\(n/a/s\\) to sort menu\n\nChanges:\n- Add keyboard shortcut handling to sort menu\n- Press ''n'' to sort by Name\n- Press ''a'' to sort by Age  \n- Press ''s'' to sort by Status\n- Press ''q'' or ESC to close menu\n- Arrow keys still work for selection\n\nPrevious behavior:\n- Only arrow keys worked in sort menu\n- Had to navigate and press Enter\n\nNew behavior:\n- Press ''m'' to open menu\n- Press ''n'', ''a'', or ''s'' directly to sort\n- Instant sort without extra navigation\n\nModified files:\n- internal/view/table.go: Added SetInputCapture with keyboard handlers\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

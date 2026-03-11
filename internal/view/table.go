@@ -15,9 +15,9 @@ import (
 	"github.com/derailed/k9s/internal/render"
 	"github.com/derailed/k9s/internal/slogs"
 	"github.com/derailed/k9s/internal/ui"
-	"github.com/derailed/k9s/internal/ui/dialog"
 	"github.com/derailed/k9s/internal/view/cmd"
 	"github.com/derailed/tcell/v2"
+	"github.com/derailed/tview"
 )
 
 // Table represents a table viewer.
@@ -257,14 +257,18 @@ func (t *Table) sortSelectedColumnCmd(*tcell.EventKey) *tcell.EventKey {
 }
 
 func (t *Table) sortMenuCmd(evt *tcell.EventKey) *tcell.EventKey {
+	t.showSortMenu()
+	return nil
+}
+
+func (t *Table) showSortMenu() {
 	options := []string{
 		"[n] Name",
 		"[a] Age",
 		"[s] Status",
 	}
 
-	d := t.app.Styles.Dialog()
-	dialog.ShowSelection(&d, t.app.Content.Pages, "Sort By", options, func(index int) {
+	sortAction := func(index int) {
 		switch index {
 		case 0: // Name
 			t.SortColCmd(nameCol, true)(nil)
@@ -273,9 +277,52 @@ func (t *Table) sortMenuCmd(evt *tcell.EventKey) *tcell.EventKey {
 		case 2: // Status
 			t.SortColCmd(statusCol, true)(nil)
 		}
+	}
+
+	list := tview.NewList()
+	list.ShowSecondaryText(false)
+	d := t.app.Styles.Dialog()
+	list.SetSelectedTextColor(d.ButtonFocusFgColor.Color())
+	list.SetSelectedBackgroundColor(d.ButtonFocusBgColor.Color())
+
+	for _, option := range options {
+		list.AddItem(option, "", 0, nil)
+	}
+
+	// Add keyboard shortcuts
+	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Rune() {
+		case 'n', 'N':
+			t.app.Content.Pages.RemovePage("dialog")
+			sortAction(0) // Name
+			return nil
+		case 'a', 'A':
+			t.app.Content.Pages.RemovePage("dialog")
+			sortAction(1) // Age
+			return nil
+		case 's', 'S':
+			t.app.Content.Pages.RemovePage("dialog")
+			sortAction(2) // Status
+			return nil
+		case 'q', 'Q':
+			t.app.Content.Pages.RemovePage("dialog")
+			return nil
+		}
+		if event.Key() == tcell.KeyEscape {
+			t.app.Content.Pages.RemovePage("dialog")
+			return nil
+		}
+		return event
 	})
 
-	return nil
+	modal := ui.NewModalList("<Sort By>", list)
+	modal.SetDoneFunc(func(i int, _ string) {
+		t.app.Content.Pages.RemovePage("dialog")
+		sortAction(i)
+	})
+
+	t.app.Content.Pages.AddPage("dialog", modal, false, false)
+	t.app.Content.Pages.ShowPage("dialog")
 }
 
 func (t *Table) cpCmd(evt *tcell.EventKey) *tcell.EventKey {
