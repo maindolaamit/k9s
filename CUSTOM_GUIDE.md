@@ -340,12 +340,24 @@ Suggested customizations for your workflow:
     ```
   - *Files modified:* `internal/config/k9s.go`, view files
 
+### Freed Shortcuts (Configurable)
+- **Ctrl-E**: Freed up (was: Toggle Header)
+- **Ctrl-G**: Freed up (was: Toggle Crumbs)
+  - *Default:* Disabled (available for your custom shortcuts)
+  - *Files modified:* `internal/config/k9s.go`, `internal/view/app.go`, `internal/view/help.go`
+
 ### Configuration
 Add the following to your `~/.config/k9s/config.yaml`:
 ```yaml
 k9s:
   asUser: app00739-sudo  # User for Ctrl-K privileged delete
+
+  # Optional: Enable original shortcuts (default: false)
+  enableCtrlE: false  # true = Ctrl-E toggles header
+  enableCtrlG: false  # true = Ctrl-G toggles crumbs
 ```
+
+**By default**, Ctrl-E and Ctrl-G do nothing - they're free for you to use for custom shortcuts!
 
 **Note:** The AsUser delete (Ctrl-K) feature currently shows a warning that it's not fully implemented. Full impersonation support for delete operations is planned for future development.
 

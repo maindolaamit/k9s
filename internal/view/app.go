@@ -252,9 +252,7 @@ func (a *App) keyboard(evt *tcell.EventKey) *tcell.EventKey {
 }
 
 func (a *App) bindKeys() {
-	a.AddActions(ui.NewKeyActionsFromMap(ui.KeyMap{
-		tcell.KeyCtrlE:     ui.NewSharedKeyAction("ToggleHeader", a.toggleHeaderCmd, false),
-		tcell.KeyCtrlG:     ui.NewSharedKeyAction("ToggleCrumbs", a.toggleCrumbsCmd, false),
+	keyMap := ui.KeyMap{
 		ui.KeyHelp:         ui.NewSharedKeyAction("Help", a.helpCmd, false),
 		ui.KeyLeftBracket:  ui.NewSharedKeyAction("Go Back", a.previousCommand, false),
 		ui.KeyRightBracket: ui.NewSharedKeyAction("Go Forward", a.nextCommand, false),
@@ -262,7 +260,19 @@ func (a *App) bindKeys() {
 		tcell.KeyCtrlA:     ui.NewSharedKeyAction("Aliases", a.aliasCmd, false),
 		tcell.KeyEnter:     ui.NewKeyAction("Goto", a.gotoCmd, false),
 		tcell.KeyCtrlC:     ui.NewKeyAction("Quit", a.quitCmd, false),
-	}))
+	}
+
+	// Conditionally add Ctrl-E (Toggle Header) based on config
+	if a.Config.K9s.EnableCtrlE {
+		keyMap[tcell.KeyCtrlE] = ui.NewSharedKeyAction("ToggleHeader", a.toggleHeaderCmd, false)
+	}
+
+	// Conditionally add Ctrl-G (Toggle Crumbs) based on config
+	if a.Config.K9s.EnableCtrlG {
+		keyMap[tcell.KeyCtrlG] = ui.NewSharedKeyAction("ToggleCrumbs", a.toggleCrumbsCmd, false)
+	}
+
+	a.AddActions(ui.NewKeyActionsFromMap(keyMap))
 }
 
 // ActiveView returns the currently active view.

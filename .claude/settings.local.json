@@ -6,7 +6,8 @@
       "Bash(ls:*)",
       "Bash(go version:*)",
       "Bash(grep:*)",
-      "Bash(./execs/k9s:*)"
+      "Bash(./execs/k9s:*)",
+      "Bash(./build.sh:*)"
     ]
   }
 }

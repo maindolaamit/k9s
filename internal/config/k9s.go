@@ -52,6 +52,8 @@ type K9s struct {
 	Thresholds          Threshold  `json:"thresholds" yaml:"thresholds"`
 	DefaultView         string     `json:"defaultView" yaml:"defaultView"`
 	AsUser              string     `json:"asUser" yaml:"asUser,omitempty"`
+	EnableCtrlE         bool       `json:"enableCtrlE" yaml:"enableCtrlE"`
+	EnableCtrlG         bool       `json:"enableCtrlG" yaml:"enableCtrlG"`
 	manualRefreshRate   float32
 	manualReadOnly      *bool
 	manualCommand       *string

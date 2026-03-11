@@ -228,8 +228,8 @@ func (h *Help) showHotKeys() (model.MenuHints, error) {
 	return mm, nil
 }
 
-func (*Help) showGeneral() model.MenuHints {
-	return model.MenuHints{
+func (h *Help) showGeneral() model.MenuHints {
+	hints := model.MenuHints{
 		{
 			Mnemonic:    "?",
 			Description: "Help",
@@ -270,18 +270,30 @@ func (*Help) showGeneral() model.MenuHints {
 			Mnemonic:    "Ctrl-l",
 			Description: "Command Clear",
 		},
-		{
+	}
+
+	// Conditionally add Ctrl-E if enabled
+	if h.app.Config.K9s.EnableCtrlE {
+		hints = append(hints, model.MenuHint{
 			Mnemonic:    "Ctrl-e",
 			Description: "Toggle Header",
-		},
-		{
+		})
+	}
+
+	// Conditionally add Ctrl-G if enabled
+	if h.app.Config.K9s.EnableCtrlG {
+		hints = append(hints, model.MenuHint{
 			Mnemonic:    "Ctrl-g",
 			Description: "Toggle Crumbs",
-		},
-		{
-			Mnemonic:    ":q",
-			Description: "Quit",
-		},
+		})
+	}
+
+	hints = append(hints, model.MenuHint{
+		Mnemonic:    ":q",
+		Description: "Quit",
+	})
+
+	hints = append(hints, []model.MenuHint{
 		{
 			Mnemonic:    "space",
 			Description: "Mark",
@@ -306,7 +318,9 @@ func (*Help) showGeneral() model.MenuHints {
 			Mnemonic:    "shift-right",
 			Description: "Select Next Column",
 		},
-	}
+	}...)
+
+	return hints
 }
 
 func (h *Help) resetTitle() {
