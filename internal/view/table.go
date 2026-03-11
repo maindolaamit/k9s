@@ -15,6 +15,7 @@ import (
 	"github.com/derailed/k9s/internal/render"
 	"github.com/derailed/k9s/internal/slogs"
 	"github.com/derailed/k9s/internal/ui"
+	"github.com/derailed/k9s/internal/ui/dialog"
 	"github.com/derailed/k9s/internal/view/cmd"
 	"github.com/derailed/tcell/v2"
 )
@@ -235,9 +236,7 @@ func (t *Table) bindKeys() {
 		ui.KeySlash:            ui.NewSharedKeyAction("Filter Mode", t.activateCmd, false),
 		tcell.KeyCtrlZ:         ui.NewKeyAction("Toggle Faults", t.toggleFaultCmd, false),
 		tcell.KeyCtrlW:         ui.NewKeyAction("Toggle Wide", t.toggleWideCmd, false),
-		ui.KeyShiftN:           ui.NewKeyAction("Sort Name", t.SortColCmd(nameCol, true), false),
-		ui.KeyShiftA:           ui.NewKeyAction("Sort Age", t.SortColCmd(ageCol, true), false),
-		ui.KeyShiftS:           ui.NewKeyAction("Sort Status", t.SortColCmd(statusCol, true), false),
+		ui.KeyM:                ui.NewKeyAction("Sort Menu", t.sortMenuCmd, false),
 		ui.KeyShiftO:           ui.NewKeyAction("Sort Selected Column", t.sortSelectedColumnCmd, false),
 	})
 }
@@ -254,6 +253,28 @@ func (t *Table) toggleWideCmd(*tcell.EventKey) *tcell.EventKey {
 
 func (t *Table) sortSelectedColumnCmd(*tcell.EventKey) *tcell.EventKey {
 	t.Table.SortSelectedColumn()
+	return nil
+}
+
+func (t *Table) sortMenuCmd(evt *tcell.EventKey) *tcell.EventKey {
+	options := []string{
+		"[n] Name",
+		"[a] Age",
+		"[s] Status",
+	}
+
+	d := t.app.Styles.Dialog()
+	dialog.ShowSelection(&d, t.app.Content.Pages, "Sort By", options, func(index int) {
+		switch index {
+		case 0: // Name
+			t.SortColCmd(nameCol, true)(nil)
+		case 1: // Age
+			t.SortColCmd(ageCol, true)(nil)
+		case 2: // Status
+			t.SortColCmd(statusCol, true)(nil)
+		}
+	})
+
 	return nil
 }
 
