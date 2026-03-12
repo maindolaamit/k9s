@@ -68,21 +68,101 @@ func (s *ScaleExtender) scaleCmd(*tcell.EventKey) *tcell.EventKey {
 }
 
 func (s *ScaleExtender) showScaleDialog(paths []string) {
-	form, err := s.makeScaleForm(paths)
-	if err != nil {
-		s.App().Flash().Err(err)
-		return
+	// Get current replica count
+	currentReplicas := "?"
+	if len(paths) == 1 {
+		if meta, _ := dao.MetaAccess.MetaFor(s.GVR()); dao.IsScalable(meta) {
+			if replicas, err := s.replicasFromScaleSubresource(paths[0]); err == nil && replicas != "" {
+				currentReplicas = replicas
+			}
+		}
+		if currentReplicas == "?" {
+			if replicas, err := s.replicasFromReady(paths[0]); err == nil {
+				currentReplicas = replicas
+			}
+		}
 	}
-	confirm := tview.NewModalForm("<Scale>", form)
-	msg := fmt.Sprintf("Scale %s %s?", singularize(s.GVR().R()), paths[0])
+
+	// Create menu-style list
+	options := []string{
+		"[0] Zero replicas (scale down)",
+		"[1] One replica",
+		"[2] Two replicas",
+		"[3] Three replicas",
+	}
+
+	msg := fmt.Sprintf("Scale %s %s (current: %s)", singularize(s.GVR().R()), paths[0], currentReplicas)
 	if len(paths) > 1 {
-		msg = fmt.Sprintf("Scale [%d] %s?", len(paths), s.GVR().R())
+		msg = fmt.Sprintf("Scale [%d] %s", len(paths), s.GVR().R())
 	}
-	confirm.SetText(msg)
-	confirm.SetDoneFunc(func(int, string) {
+
+	scaleAction := func(index int) {
 		s.dismissDialog()
+		ctx, cancel := context.WithTimeout(context.Background(), s.App().Conn().Config().CallTimeout())
+		defer cancel()
+
+		for _, fqn := range paths {
+			if err := s.scale(ctx, fqn, int32(index)); err != nil {
+				slog.Error("Unable to scale resource", slogs.FQN, fqn)
+				s.App().Flash().Err(err)
+				return
+			}
+		}
+		if len(paths) != 1 {
+			s.App().Flash().Infof("[%d] %s scaled to %d replicas", len(paths), singularize(s.GVR().R()), index)
+		} else {
+			s.App().Flash().Infof("%s %s scaled to %d replicas", singularize(s.GVR().R()), paths[0], index)
+		}
+	}
+
+	styles := s.App().Styles.Dialog()
+	list := tview.NewList().ShowSecondaryText(false)
+	list.SetSelectedTextColor(styles.ButtonFocusFgColor.Color())
+	list.SetSelectedBackgroundColor(styles.ButtonFocusBgColor.Color())
+
+	for _, option := range options {
+		list.AddItem(option, "", 0, nil)
+	}
+
+	// Add keyboard shortcuts
+	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Rune() {
+		case '0':
+			s.dismissDialog()
+			scaleAction(0)
+			return nil
+		case '1':
+			s.dismissDialog()
+			scaleAction(1)
+			return nil
+		case '2':
+			s.dismissDialog()
+			scaleAction(2)
+			return nil
+		case '3':
+			s.dismissDialog()
+			scaleAction(3)
+			return nil
+		case 'q', 'Q':
+			s.dismissDialog()
+			return nil
+		}
+		if event.Key() == tcell.KeyEscape {
+			s.dismissDialog()
+			return nil
+		}
+		return event
 	})
-	s.App().Content.AddPage(scaleDialogKey, confirm, false, false)
+
+	modal := ui.NewModalList(fmt.Sprintf("<%s>", msg), list)
+	modal.SetDoneFunc(func(i int, _ string) {
+		s.dismissDialog()
+		if i >= 0 && i <= 3 {
+			scaleAction(i)
+		}
+	})
+
+	s.App().Content.AddPage(scaleDialogKey, modal, false, false)
 	s.App().Content.ShowPage(scaleDialogKey)
 }
 

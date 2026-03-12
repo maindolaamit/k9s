@@ -20,6 +20,7 @@
           }
         },
         "screenDumpDir": {"type": "string"},
+        "screenDumpSaveToCwd": {"type": "boolean"},
         "asUser": { "type": "string" },
         "refreshRate": { "type": "number" },
         "apiServerTimeout": { "type": "string" },

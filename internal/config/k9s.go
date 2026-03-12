@@ -37,6 +37,7 @@ type K9s struct {
 	LiveViewAutoRefresh bool       `json:"liveViewAutoRefresh" yaml:"liveViewAutoRefresh"`
 	GPUVendors          gpuVendors `json:"gpuVendors" yaml:"gpuVendors"`
 	ScreenDumpDir       string     `json:"screenDumpDir" yaml:"screenDumpDir,omitempty"`
+	ScreenDumpSaveToCwd bool       `json:"screenDumpSaveToCwd" yaml:"screenDumpSaveToCwd"`
 	RefreshRate         float32    `json:"refreshRate" yaml:"refreshRate"`
 	APIServerTimeout    string     `json:"apiServerTimeout" yaml:"apiServerTimeout"`
 	MaxConnRetry        int32      `json:"maxConnRetry" yaml:"maxConnRetry"`
@@ -175,6 +176,18 @@ func (k *K9s) AppScreenDumpDir() string {
 // ContextScreenDumpDir fetch context specific screen dumps dir.
 func (k *K9s) ContextScreenDumpDir() string {
 	return filepath.Join(k.AppScreenDumpDir(), k.contextPath())
+}
+
+// GetScreenDumpDir returns the appropriate directory for saving screen dumps.
+// If ScreenDumpSaveToCwd is true, returns current working directory.
+// Otherwise returns ContextScreenDumpDir.
+func (k *K9s) GetScreenDumpDir() string {
+	if k.ScreenDumpSaveToCwd {
+		if cwd, err := os.Getwd(); err == nil {
+			return cwd
+		}
+	}
+	return k.ContextScreenDumpDir()
 }
 
 func (k *K9s) contextPath() string {
