@@ -295,6 +295,15 @@ func (c *Config) ImpersonateUser() (string, error) {
 	return "", errors.New("no user set")
 }
 
+// SetImpersonateUser sets the impersonate user for kubectl commands.
+func (c *Config) SetImpersonateUser(user string) {
+	if user == "" {
+		c.flags.Impersonate = nil
+	} else {
+		c.flags.Impersonate = &user
+	}
+}
+
 // CurrentUserName retrieves the active user name.
 func (c *Config) CurrentUserName() (string, error) {
 	if isSet(c.flags.Impersonate) {

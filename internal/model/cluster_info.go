@@ -40,6 +40,7 @@ type ClusterInfoListener interface {
 type ClusterMeta struct {
 	Context, Cluster    string
 	User                string
+	Impersonate         string
 	K9sVer, K9sLatest   string
 	K8sVer              string
 	Cpu, Mem, Ephemeral int
@@ -68,6 +69,7 @@ func (c *ClusterMeta) Deltas(n *ClusterMeta) bool {
 	return c.Context != n.Context ||
 		c.Cluster != n.Cluster ||
 		c.User != n.User ||
+		c.Impersonate != n.Impersonate ||
 		c.K8sVer != n.K8sVer ||
 		c.K9sVer != n.K9sVer ||
 		c.K9sLatest != n.K9sLatest
@@ -135,6 +137,9 @@ func (c *ClusterInfo) Refresh() {
 		data.Context = c.cluster.ContextName()
 		data.Cluster = c.cluster.ClusterName()
 		data.User = c.cluster.UserName()
+		if imp, err := c.factory.Client().Config().ImpersonateUser(); err == nil && imp != "" {
+			data.Impersonate = imp
+		}
 		data.K8sVer = c.cluster.Version()
 		ctx, cancel := context.WithTimeout(context.Background(), c.cluster.factory.Client().Config().CallTimeout())
 		defer cancel()
