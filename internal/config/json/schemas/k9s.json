@@ -20,6 +20,7 @@
           }
         },
         "screenDumpDir": {"type": "string"},
+        "asUser": { "type": "string" },
         "refreshRate": { "type": "number" },
         "apiServerTimeout": { "type": "string" },
         "maxConnRetry": { "type": "integer" },
@@ -28,6 +29,8 @@
         "skipLatestRevCheck": { "type": "boolean" },
         "disablePodCounting": { "type": "boolean" },
         "defaultView": { "type": "string" },
+        "enableCtrlE": { "type": "boolean" },
+        "enableCtrlG": { "type": "boolean" },
         "portForwardAddress": { "type": "string" },
         "ui": {
           "type": "object",
