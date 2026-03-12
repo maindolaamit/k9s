@@ -173,7 +173,6 @@ func (x *Xray) refreshActions() {
 	}
 	if client.Can(x.meta.Verbs, "delete") {
 		aa.Add(ui.KeyShiftD, ui.NewKeyAction("Delete", x.deleteCmd, true))
-		aa.Add(tcell.KeyCtrlK, ui.NewKeyAction("Delete AsUser", x.asUserDeleteCmd, true))
 	}
 	if !dao.IsK9sMeta(x.meta) {
 		aa.Bulk(ui.KeyMap{
@@ -731,36 +730,6 @@ func (x *Xray) resourceDelete(gvr *client.GVR, spec *xray.NodeSpec, msg string) 
 	}, func() {})
 }
 
-func (x *Xray) asUserDeleteCmd(evt *tcell.EventKey) *tcell.EventKey {
-	asUser := x.app.Config.K9s.AsUser
-	if asUser == "" {
-		x.app.Flash().Warn("AsUser not configured. Set 'asUser' in k9s config to use this feature.")
-		return nil
-	}
-
-	spec := x.selectedSpec()
-	if spec == nil {
-		return evt
-	}
-
-	x.Stop()
-	defer x.Start()
-	{
-		meta, err := dao.MetaAccess.MetaFor(spec.GVR())
-		if err != nil {
-			slog.Warn("No meta found!",
-				slogs.GVR, spec.GVR(),
-				slogs.Error, err,
-			)
-			return nil
-		}
-		// TODO: Implement impersonation for delete operations
-		msg := fmt.Sprintf("Delete %s %s as user '%s'?", meta.SingularName, spec.Path(), asUser)
-		x.app.Flash().Warnf("AsUser delete not yet implemented. Message would be: %s", msg)
-	}
-
-	return nil
-}
 
 // ----------------------------------------------------------------------------
 // Helpers...

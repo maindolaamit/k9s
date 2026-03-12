@@ -34,7 +34,7 @@ func (r *RestartExtender) bindKeys(aa *ui.KeyActions) {
 	if r.App().Config.IsReadOnly() {
 		return
 	}
-	aa.Add(ui.KeyR, ui.NewKeyActionWithOpts("Restart", r.restartCmd,
+	aa.Add(ui.KeyShiftR, ui.NewKeyActionWithOpts("Restart", r.restartCmd,
 		ui.ActionOpts{
 			Visible:   true,
 			Dangerous: true,

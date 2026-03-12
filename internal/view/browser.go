@@ -613,7 +613,7 @@ func (b *Browser) refreshActions() {
 	aa := ui.NewKeyActionsFromMap(ui.KeyMap{
 		ui.KeyC:        ui.NewKeyAction("Copy", b.cpCmd, false),
 		tcell.KeyEnter: ui.NewKeyAction("View", b.enterCmd, false),
-		tcell.KeyCtrlR: ui.NewKeyAction("Refresh", b.refreshCmd, false),
+		ui.KeyR:        ui.NewKeyAction("Refresh", b.refreshCmd, false),
 	})
 
 	if b.app.ConOK() {
@@ -628,11 +628,6 @@ func (b *Browser) refreshActions() {
 			}
 			if client.Can(b.meta.Verbs, "delete") {
 				aa.Add(ui.KeyShiftD, ui.NewKeyActionWithOpts("Delete", b.deleteCmd,
-					ui.ActionOpts{
-						Visible:   true,
-						Dangerous: true,
-					}))
-				aa.Add(tcell.KeyCtrlK, ui.NewKeyActionWithOpts("Delete AsUser", b.asUserDeleteCmd,
 					ui.ActionOpts{
 						Visible:   true,
 						Dangerous: true,
@@ -750,21 +745,3 @@ func (b *Browser) resourceDelete(selections []string, msg string) {
 	dialog.ShowDelete(&d, b.app.Content.Pages, msg, okFn, func() {})
 }
 
-func (b *Browser) asUserDeleteCmd(evt *tcell.EventKey) *tcell.EventKey {
-	asUser := b.app.Config.K9s.AsUser
-	if asUser == "" {
-		b.app.Flash().Warn("AsUser not configured. Set 'asUser' in k9s config to use this feature.")
-		return nil
-	}
-
-	selections := b.GetSelectedItems()
-	if len(selections) == 0 {
-		return evt
-	}
-
-	// TODO: Implement impersonation for delete operations
-	// For now, show warning that this is not yet fully implemented
-	b.app.Flash().Warnf("AsUser delete not yet implemented. Use regular delete (Shift-D) for now.")
-
-	return nil
-}

@@ -237,7 +237,6 @@ func (t *Table) bindKeys() {
 		tcell.KeyCtrlZ:         ui.NewKeyAction("Toggle Faults", t.toggleFaultCmd, false),
 		tcell.KeyCtrlW:         ui.NewKeyAction("Toggle Wide", t.toggleWideCmd, false),
 		ui.KeyM:                ui.NewKeyAction("Sort Menu", t.sortMenuCmd, false),
-		ui.KeyShiftO:           ui.NewKeyAction("Sort Selected Column", t.sortSelectedColumnCmd, false),
 	})
 }
 
@@ -251,11 +250,6 @@ func (t *Table) toggleWideCmd(*tcell.EventKey) *tcell.EventKey {
 	return nil
 }
 
-func (t *Table) sortSelectedColumnCmd(*tcell.EventKey) *tcell.EventKey {
-	t.Table.SortSelectedColumn()
-	return nil
-}
-
 func (t *Table) sortMenuCmd(evt *tcell.EventKey) *tcell.EventKey {
 	t.showSortMenu()
 	return nil
@@ -266,6 +260,7 @@ func (t *Table) showSortMenu() {
 		"[n] Name",
 		"[a] Age",
 		"[s] Status",
+		"[o] Selected Column",
 	}
 
 	sortAction := func(index int) {
@@ -276,6 +271,8 @@ func (t *Table) showSortMenu() {
 			t.SortColCmd(ageCol, true)(nil)
 		case 2: // Status
 			t.SortColCmd(statusCol, true)(nil)
+		case 3: // Selected Column
+			t.Table.SortSelectedColumn()
 		}
 	}
 
@@ -303,6 +300,10 @@ func (t *Table) showSortMenu() {
 		case 's', 'S':
 			t.app.Content.Pages.RemovePage("dialog")
 			sortAction(2) // Status
+			return nil
+		case 'o', 'O':
+			t.app.Content.Pages.RemovePage("dialog")
+			sortAction(3) // Selected Column
 			return nil
 		case 'q', 'Q':
 			t.app.Content.Pages.RemovePage("dialog")
