@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -180,14 +181,21 @@ func (k *K9s) ContextScreenDumpDir() string {
 
 // GetScreenDumpDir returns the appropriate directory for saving screen dumps.
 // If ScreenDumpSaveToCwd is true, returns current working directory.
-// Otherwise returns ContextScreenDumpDir.
+// Otherwise returns ContextScreenDumpDir with tilde expanded.
 func (k *K9s) GetScreenDumpDir() string {
 	if k.ScreenDumpSaveToCwd {
 		if cwd, err := os.Getwd(); err == nil {
 			return cwd
 		}
 	}
-	return k.ContextScreenDumpDir()
+	dir := k.ContextScreenDumpDir()
+	// Expand tilde to home directory
+	if strings.HasPrefix(dir, "~/") {
+		if home, err := os.UserHomeDir(); err == nil {
+			dir = filepath.Join(home, dir[2:])
+		}
+	}
+	return dir
 }
 
 func (k *K9s) contextPath() string {
