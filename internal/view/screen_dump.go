@@ -36,7 +36,7 @@ func NewScreenDump(gvr *client.GVR) ResourceViewer {
 }
 
 func (s *ScreenDump) dirContext(ctx context.Context) context.Context {
-	dir := s.App().Config.K9s.ContextScreenDumpDir()
+	dir := s.App().Config.K9s.GetScreenDumpDir()
 	if err := data.EnsureFullPath(dir, data.DefaultDirMod); err != nil {
 		s.App().Flash().Err(err)
 		return ctx
