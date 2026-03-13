@@ -45,7 +45,7 @@ func (s *ScaleExtender) bindKeys(aa *ui.KeyActions) {
 	}
 
 	if dao.IsScalable(meta) {
-		aa.Add(ui.KeyS, ui.NewKeyActionWithOpts("Scale", s.scaleCmd,
+		aa.Add(ui.KeyShiftS, ui.NewKeyActionWithOpts("Scale", s.scaleCmd,
 			ui.ActionOpts{
 				Visible:   true,
 				Dangerous: true,
