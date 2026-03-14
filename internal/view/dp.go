@@ -326,7 +326,13 @@ func (d *Deploy) showRestoreDialog(path string, backups []string) {
 			d.dismissRestoreDialog()
 			return nil
 		}
-		return event
+		// Allow navigation keys to pass through to the list
+		switch event.Key() {
+		case tcell.KeyUp, tcell.KeyDown, tcell.KeyEnter, tcell.KeyTab, tcell.KeyBacktab:
+			return event
+		}
+		// Consume all other keys to prevent them from reaching app-level handlers
+		return nil
 	})
 
 	modal := ui.NewModalList(fmt.Sprintf("<Restore %s>", path), list)

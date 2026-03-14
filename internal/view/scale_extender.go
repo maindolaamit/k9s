@@ -157,7 +157,13 @@ func (s *ScaleExtender) showScaleDialog(paths []string) {
 			s.dismissDialog()
 			return nil
 		}
-		return event
+		// Allow navigation keys to pass through to the list
+		switch event.Key() {
+		case tcell.KeyUp, tcell.KeyDown, tcell.KeyEnter, tcell.KeyTab, tcell.KeyBacktab:
+			return event
+		}
+		// Consume all other keys to prevent them from reaching app-level handlers
+		return nil
 	})
 
 	modal := ui.NewModalList(fmt.Sprintf("<%s>", msg), list)
