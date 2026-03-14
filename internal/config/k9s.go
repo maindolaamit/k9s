@@ -143,6 +143,10 @@ func (k *K9s) Merge(k1 *K9s) {
 	k.LiveViewAutoRefresh = k1.LiveViewAutoRefresh
 	k.DefaultView = k1.DefaultView
 	k.ScreenDumpDir = k1.ScreenDumpDir
+	k.ScreenDumpSaveToCwd = k1.ScreenDumpSaveToCwd
+	k.AsUser = k1.AsUser
+	k.EnableCtrlE = k1.EnableCtrlE
+	k.EnableCtrlG = k1.EnableCtrlG
 	k.RefreshRate = k1.RefreshRate
 	k.APIServerTimeout = k1.APIServerTimeout
 	k.MaxConnRetry = k1.MaxConnRetry
