@@ -13,7 +13,13 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: improve keybindings and remove incomplete asUser delete\n\n- Change refresh from ctrl+r to ''r'' for pods/deployments \\(harmless operation\\)\n- Change restart from ''r'' to shift+r for pods/deployments \\(deliberate action\\)\n- Change aliases from ctrl+a to shift+a \\(frees up ctrl+a for future use\\)\n- Merge \"Sort Selected Column\" into sort menu as option ''o''\n- Remove shift+o keybinding \\(now available for other purposes\\)\n- Remove incomplete asUserDeleteCmd from browser, workload, and xray\n- Remove ctrl+k \"Delete AsUser\" keybinding from all views\n\nThis simplifies the keybinding model and prepares for a better\nimpersonation toggle feature on ctrl+a in the future.\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: add native backup and restore shortcuts for deployments\n\n- Added ''b'' key to backup deployments to YAML files\n- Added ''u'' key to restore deployments from backup menu\n- Backups stored in screenDumpDir/deployment-backups/\n- Restore shows menu of 5 most recent backups with timestamps\n- Direct selection via number keys \\(0-4\\)\n- Replaces bash plugin implementation with native Go code\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: expand tilde in screenDumpDir path for backup/restore\n\n- Added tilde expansion in GetScreenDumpDir\\(\\) method\n- Prevents creation of literal ''~'' directory\n- Ensures backups are saved to correct home directory location\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(go build:*)",
+      "Bash(go doc:*)",
+      "Bash(~/.k9s/config.yaml)",
+      "Bash(~/.k9s/config.yaml << 'EOF'\nk9s:\n  ui:\n    skin: nord\nEOF)",
+      "Bash(~/.k9s/config.yaml << 'EOF'\nk9s:\n  ui:\n    skin: tokyo-night\nEOF)",
+      "Bash(chmod:*)"
     ]
   }
 }
