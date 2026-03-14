@@ -1,15 +1,48 @@
 <img src="assets/k9s.png" alt="k9s">
 
-## K9s - Kubernetes CLI To Manage Your Clusters In Style!
+# K9s Custom Fork - Enhanced Kubernetes CLI
+
+> **This is a customized fork of [K9s](https://github.com/derailed/k9s)** - a fantastic Kubernetes CLI tool created by [Fernand Galiana](https://github.com/derailed). All core functionality and credit belong to the original K9s project and its contributors.
+
+This fork adds custom keybindings and workflow enhancements on top of the excellent K9s foundation. If you're looking for the official K9s project, please visit: https://github.com/derailed/k9s
+
+## What's Different in This Fork?
+
+This fork extends K9s with custom keybindings and features that cannot be achieved through standard K9s configuration files:
+
+- **Vim-style Navigation**: Ctrl-U/Ctrl-D for page up/down
+- **Custom Delete Workflows**: Shift-D for delete, Ctrl-K for privileged delete with impersonation
+- **Unified Sort Menu**: Press `m` to open a sort menu instead of remembering multiple shortcuts
+- **Enhanced Log Filtering**: Advanced filtering with match navigation
+- **ConfigMap Viewer**: View and export ConfigMap contents
+- **CronJob Enhancements**: Trigger shows created Job name
+- **Custom Skins**: Tokyo Night theme and quick skin switcher
+- **Freed Shortcuts**: Ctrl-E and Ctrl-G freed for your own customizations
+
+For detailed customization documentation, see [CUSTOM_GUIDE.md](CUSTOM_GUIDE.md).
+
+---
+
+## Original K9s Project
 
 K9s provides a terminal UI to interact with your Kubernetes clusters.
 The aim of this project is to make it easier to navigate, observe and manage
 your applications in the wild. K9s continually watches Kubernetes
 for changes and offers subsequent commands to interact with your observed resources.
 
+**All credit goes to the original K9s project**: https://github.com/derailed/k9s
+
 ---
 
-## Note...
+## Support the Original Project
+
+K9s is not pimped out by a big corporation with deep pockets.
+It is a complex OSS project that demands a lot of time to maintain and support.
+K9s will always remain OSS and therefore free! If k9s makes your Kubernetes journey better, please consider [sponsoring the original project](https://github.com/sponsors/derailed)!
+
+---
+
+## Note About This Fork
 
 K9s is not pimped out by a big corporation with deep pockets.
 It is a complex OSS project that demands a lot of my time to maintain and support.

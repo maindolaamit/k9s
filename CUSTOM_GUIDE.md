@@ -1,5 +1,7 @@
 # K9s Custom Fork - Complete Guide
 
+> **About This Project**: This is a customized fork of [K9s](https://github.com/derailed/k9s), the excellent Kubernetes CLI tool by [Fernand Galiana](https://github.com/derailed). This fork adds custom keybindings and features that extend beyond what's possible with standard K9s configuration files. All core functionality belongs to the original K9s project.
+
 ## Quick Start
 
 ```bash
@@ -21,6 +23,7 @@ k9s-custom version
 Standard k9s config (`~/.config/k9s/hotkeys.yaml`) **cannot override** built-in shortcuts like `:`, `?`, `Ctrl-C`, etc.
 
 This fork lets you:
+
 - Override ANY built-in shortcut
 - Change default settings (refresh rate, default view, etc.)
 - Add deeply integrated custom features
@@ -47,11 +50,13 @@ Your existing plugins will continue working.
 **File:** `internal/view/app.go` (line 254, in `bindKeys()` function)
 
 **Add after line 262:**
+
 ```go
 tcell.KeyCtrlN: ui.NewSharedKeyAction("Jump to app00739", a.jumpToApp00739, false),
 ```
 
 **Add handler function after bindKeys():**
+
 ```go
 func (a *App) jumpToApp00739(evt *tcell.EventKey) *tcell.EventKey {
     if err := a.Config.SetActiveNamespace("app00739"); err != nil {
@@ -69,11 +74,13 @@ func (a *App) jumpToApp00739(evt *tcell.EventKey) *tcell.EventKey {
 **File:** `internal/view/app.go` (line 264)
 
 **Change:**
+
 ```go
 tcell.KeyCtrlC: ui.NewKeyAction("Quit", a.quitCmd, false),
 ```
 
 **To:**
+
 ```go
 tcell.KeyCtrlQ: ui.NewKeyAction("Quit", a.quitCmd, false),
 ```
@@ -83,11 +90,13 @@ tcell.KeyCtrlQ: ui.NewKeyAction("Quit", a.quitCmd, false),
 **File:** `internal/view/app.go` (line 258)
 
 **Change:**
+
 ```go
 ui.KeyHelp: ui.NewSharedKeyAction("Help", a.helpCmd, false),
 ```
 
 **To:**
+
 ```go
 tcell.KeyF1: ui.NewSharedKeyAction("Help", a.helpCmd, false),
 ```
@@ -97,6 +106,7 @@ tcell.KeyF1: ui.NewSharedKeyAction("Help", a.helpCmd, false),
 **File:** `internal/config/k9s.go`
 
 **Find `newK9s()` function and change:**
+
 ```go
 func newK9s() *K9s {
     return &K9s{
@@ -111,6 +121,7 @@ func newK9s() *K9s {
 **File:** `internal/config/k9s.go`
 
 **In `newK9s()` function, add:**
+
 ```go
 DefaultView: "pods",  // Always start with pods
 ```
@@ -120,6 +131,7 @@ DefaultView: "pods",  // Always start with pods
 **File:** `internal/view/app.go`
 
 **Complete example with multiple shortcuts:**
+
 ```go
 func (a *App) bindKeys() {
     a.AddActions(ui.NewKeyActionsFromMap(ui.KeyMap{
@@ -190,11 +202,13 @@ ui.Key0 through ui.Key9
 ## Build and Deploy
 
 ### Build
+
 ```bash
 ./build.sh
 ```
 
 ### Test (Recommended)
+
 ```bash
 # Install as separate binary
 cp execs/k9s /usr/local/bin/k9s-custom
@@ -204,6 +218,7 @@ k9s-custom
 ```
 
 ### Deploy (After Testing)
+
 ```bash
 # Backup original
 cp /opt/homebrew/bin/k9s /opt/homebrew/bin/k9s.bak
@@ -250,12 +265,14 @@ git merge upstream/master
 ## Troubleshooting
 
 ### Build fails
+
 ```bash
 go mod tidy
 ./build.sh
 ```
 
 ### Changes don't appear
+
 ```bash
 # Check which binary you're running
 which k9s
@@ -268,6 +285,7 @@ rm -rf execs/ && ./build.sh
 ```
 
 ### Merge conflicts
+
 ```bash
 git stash                    # Save changes
 git merge upstream/master    # Merge
@@ -304,6 +322,7 @@ Use `CUSTOMIZATIONS.txt` to track what you've modified:
 **Plugins:** All your plugins in `~/.config/k9s/plugins.yaml` will continue working
 
 Suggested customizations for your workflow:
+
 1. Quick namespace shortcuts (Ctrl-N for app00739)
 2. Default to your namespace
 3. Faster refresh rate
@@ -314,47 +333,57 @@ Suggested customizations for your workflow:
 ## Implemented Custom Keybindings
 
 ### Navigation (Vim-style)
+
 - **Ctrl-U**: Page Up (half-page scroll up)
 - **Ctrl-D**: Page Down (half-page scroll down)
-  - *Changed from:* Ctrl-B (page up), Ctrl-F (page down)
-  - *Files modified:* `internal/ui/select_table.go`, `internal/view/table.go`
+  - _Changed from:_ Ctrl-B (page up), Ctrl-F (page down)
+  - _Files modified:_ `internal/ui/select_table.go`, `internal/view/table.go`
 
 ### Clear Filter
+
 - **Ctrl-L**: Clear filter/command
 - **Ctrl-Q**: Clear filter (backup)
-  - *Changed from:* Ctrl-U
-  - *Files modified:* `internal/ui/app.go`
+  - _Changed from:_ Ctrl-U
+  - _Files modified:_ `internal/ui/app.go`
 
 ### Delete Resource
+
 - **Shift-D**: Delete resource (normal delete)
-  - *Changed from:* Ctrl-D
-  - *Files modified:* Multiple view files (browser.go, workload.go, xray.go, etc.)
+  - _Changed from:_ Ctrl-D
+  - _Files modified:_ Multiple view files (browser.go, workload.go, xray.go, etc.)
 
 ### Delete AsUser (Privileged Delete)
+
 - **Ctrl-K**: Delete resource with impersonation
-  - *Requires:* `asUser` configured in `~/.config/k9s/config.yaml`
-  - *Example config:*
+  - _Requires:_ `asUser` configured in `~/.config/k9s/config.yaml`
+  - _Example config:_
+
     ```yaml
     k9s:
       asUser: app00739-sudo
     ```
-  - *Files modified:* `internal/config/k9s.go`, view files
+
+  - _Files modified:_ `internal/config/k9s.go`, view files
 
 ### Freed Shortcuts (Configurable)
+
 - **Ctrl-E**: Freed up (was: Toggle Header)
 - **Ctrl-G**: Freed up (was: Toggle Crumbs)
-  - *Default:* Disabled (available for your custom shortcuts)
-  - *Files modified:* `internal/config/k9s.go`, `internal/view/app.go`, `internal/view/help.go`
+  - _Default:_ Disabled (available for your custom shortcuts)
+  - _Files modified:_ `internal/config/k9s.go`, `internal/view/app.go`, `internal/view/help.go`
 
 ### Sort Menu (Unified Sorting)
+
 - **m**: Opens Sort Menu popup
   - Menu options: `[n] Name`, `[a] Age`, `[s] Status`
-  - *Changed from:* Shift-A (Age), Shift-N (Name), Shift-S (Status)
-  - *Benefit:* Single key to remember, easier to discover sort options
-  - *Files modified:* `internal/view/table.go`
+  - _Changed from:_ Shift-A (Age), Shift-N (Name), Shift-S (Status)
+  - _Benefit:_ Single key to remember, easier to discover sort options
+  - _Files modified:_ `internal/view/table.go`
 
 ### Configuration
+
 Add the following to your `~/.config/k9s/config.yaml`:
+
 ```yaml
 k9s:
   asUser: app00739-sudo  # User for Ctrl-K privileged delete
@@ -382,9 +411,12 @@ k9s:
 
 ## Resources
 
-- Original k9s: https://github.com/derailed/k9s
-- tcell (keyboard): https://github.com/gdamore/tcell
-- This fork location: `/Users/l9w9/github/k9s-custom`
+- **Original K9s Project** (please support!): https://github.com/derailed/k9s
+- **K9s Documentation**: https://k9scli.io
+- **K9s Sponsor Page**: https://github.com/sponsors/derailed
+- tcell (keyboard library): https://github.com/gdamore/tcell
+- This fork repository: https://github.com/l9w9/k9s-custom
+- Local path: `/Users/l9w9/github/k9s-custom`
 - Branch: `custom-keybindings`
 
 ---
