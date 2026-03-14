@@ -1,0 +1,127 @@
+# -----------------------------------------------------------------------------
+# Tokyo Night skin for K9s
+# Based on Tokyo Night theme (storm variant)
+# -----------------------------------------------------------------------------
+
+# Styles...
+foreground: &foreground "#c0caf5"
+background: &background "#24283b"
+current_line: &current_line "#3b4261"
+selection: &selection "#364a82"
+comment: &comment "#565f89"
+cyan: &cyan "#7dcfff"
+green: &green "#9ece6a"
+orange: &orange "#ff9e64"
+pink: &pink "#f7768e"
+purple: &purple "#bb9af7"
+blue: &blue "#7aa2f7"
+red: &red "#f7768e"
+yellow: &yellow "#e0af68"
+teal: &teal "#1abc9c"
+
+# Skin...
+k9s:
+  # General K9s styles
+  body:
+    fgColor: *foreground
+    bgColor: *background
+    logoColor: *blue
+  # Command prompt styles
+  prompt:
+    fgColor: *foreground
+    bgColor: *background
+    suggestColor: *purple
+  # ClusterInfoView styles.
+  info:
+    fgColor: *blue
+    sectionColor: *foreground
+  # Dialog styles.
+  dialog:
+    fgColor: *foreground
+    bgColor: *background
+    buttonFgColor: *foreground
+    buttonBgColor: *purple
+    buttonFocusFgColor: *background
+    buttonFocusBgColor: *cyan
+    labelFgColor: *orange
+    fieldFgColor: *foreground
+  frame:
+    # Borders styles.
+    border:
+      fgColor: *current_line
+      focusColor: *blue
+    menu:
+      fgColor: *foreground
+      keyColor: *cyan
+      # Used for favorite namespaces
+      numKeyColor: *blue
+    # CrumbView attributes for history navigation.
+    crumbs:
+      fgColor: *foreground
+      bgColor: *current_line
+      activeColor: *cyan
+    # Resource status and update styles
+    status:
+      newColor: *cyan
+      modifyColor: *yellow
+      addColor: *green
+      errorColor: *red
+      highlightColor: *orange
+      killColor: *comment
+      completedColor: *comment
+    # Border title styles.
+    title:
+      fgColor: *foreground
+      bgColor: *current_line
+      highlightColor: *orange
+      counterColor: *purple
+      filterColor: *cyan
+  views:
+    # Charts skins...
+    charts:
+      bgColor: *background
+      defaultDialColors:
+        - *blue
+        - *cyan
+      defaultChartColors:
+        - *blue
+        - *cyan
+    # TableView attributes.
+    table:
+      fgColor: *foreground
+      bgColor: *background
+      cursorFgColor: *background
+      cursorBgColor: *cyan
+      # Header row styles.
+      header:
+        fgColor: *cyan
+        bgColor: *background
+        sorterColor: *blue
+    # Xray view attributes.
+    xray:
+      fgColor: *foreground
+      bgColor: *background
+      cursorColor: *current_line
+      graphicColor: *blue
+      showIcons: false
+    # YAML info styles.
+    yaml:
+      keyColor: *cyan
+      colonColor: *purple
+      valueColor: *foreground
+    # Logs styles.
+    logs:
+      fgColor: *foreground
+      bgColor: *background
+      indicator:
+        fgColor: *background
+        bgColor: *blue
+        toggleOnColor: *green
+        toggleOffColor: *cyan
+    # Help view styles.
+    help:
+      fgColor: *foreground
+      bgColor: *background
+      keyColor: *cyan
+      numKeyColor: *blue
+      sectionColor: *purple
