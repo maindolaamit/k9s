@@ -57,7 +57,21 @@ func (m *ModalList) Draw(screen tcell.Screen) {
 		width = max(width, len(main)+len(secondary)+2)
 	}
 
+	// Also consider the title length
+	titleLen := len(m.frame.GetTitle()) + 4
+	width = max(width, titleLen)
+
+	// Set minimum width to ensure readability
+	const minWidth = 70
+	width = max(width, minWidth)
+
 	screenWidth, screenHeight := screen.Size()
+
+	// Ensure width doesn't exceed 80% of screen width
+	maxWidth := (screenWidth * 4) / 5
+	if width > maxWidth {
+		width = maxWidth
+	}
 
 	// Set the modal's position and size.
 	height := m.list.GetItemCount() + 4

@@ -119,9 +119,15 @@ func (s *ScaleExtender) showScaleDialog(paths []string) {
 	list := tview.NewList().ShowSecondaryText(false)
 	list.SetSelectedTextColor(styles.ButtonFocusFgColor.Color())
 	list.SetSelectedBackgroundColor(styles.ButtonFocusBgColor.Color())
+	list.SetMainTextColor(styles.FgColor.Color())
 
 	for _, option := range options {
 		list.AddItem(option, "", 0, nil)
+	}
+
+	// Ensure first item is selected
+	if len(options) > 0 {
+		list.SetCurrentItem(0)
 	}
 
 	// Add keyboard shortcuts
@@ -162,7 +168,7 @@ func (s *ScaleExtender) showScaleDialog(paths []string) {
 		}
 	})
 
-	s.App().Content.AddPage(scaleDialogKey, modal, false, false)
+	s.App().Content.AddPage(scaleDialogKey, modal, true, true)
 	s.App().Content.ShowPage(scaleDialogKey)
 }
 

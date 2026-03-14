@@ -289,9 +289,15 @@ func (d *Deploy) showRestoreDialog(path string, backups []string) {
 	list := tview.NewList().ShowSecondaryText(false)
 	list.SetSelectedTextColor(styles.ButtonFocusFgColor.Color())
 	list.SetSelectedBackgroundColor(styles.ButtonFocusBgColor.Color())
+	list.SetMainTextColor(styles.FgColor.Color())
 
 	for _, option := range options {
 		list.AddItem(option, "", 0, nil)
+	}
+
+	// Ensure first item is selected
+	if len(options) > 0 {
+		list.SetCurrentItem(0)
 	}
 
 	// Add keyboard shortcuts
@@ -325,7 +331,7 @@ func (d *Deploy) showRestoreDialog(path string, backups []string) {
 		}
 	})
 
-	d.App().Content.AddPage("restore", modal, false, false)
+	d.App().Content.AddPage("restore", modal, true, true)
 	d.App().Content.ShowPage("restore")
 }
 
