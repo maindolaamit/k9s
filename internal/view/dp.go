@@ -290,14 +290,20 @@ func (d *Deploy) showRestoreDialog(path string, backups []string) {
 	list.SetSelectedTextColor(styles.ButtonFocusFgColor.Color())
 	list.SetSelectedBackgroundColor(styles.ButtonFocusBgColor.Color())
 	list.SetMainTextColor(styles.FgColor.Color())
+	list.SetBackgroundColor(styles.BgColor.Color())
 
 	for _, option := range options {
 		list.AddItem(option, "", 0, nil)
 	}
 
-	// Ensure first item is selected
+	// Ensure first item is selected and visible
 	if len(options) > 0 {
 		list.SetCurrentItem(0)
+	}
+
+	// Force the list to be visible by setting a fixed height when only 1 item
+	if len(options) == 1 {
+		list.SetBorder(false)
 	}
 
 	// Add keyboard shortcuts

@@ -74,7 +74,13 @@ func (m *ModalList) Draw(screen tcell.Screen) {
 	}
 
 	// Set the modal's position and size.
-	height := m.list.GetItemCount() + 4
+	// Height calculation: items + frame borders(2) + frame padding(2) + header(1) + extra space(1) = items + 6
+	height := m.list.GetItemCount() + 6
+	// Ensure minimum height of 8 for proper single-item rendering with all borders and padding
+	const minHeight = 8
+	if height < minHeight {
+		height = minHeight
+	}
 	width += 2
 	x := (screenWidth - width) / 2
 	y := (screenHeight - height) / 2
