@@ -172,7 +172,13 @@ func (l *Log) LogChanged(lines [][]byte) {
 // BufferCompleted indicates input was accepted.
 func (l *Log) BufferCompleted(text, _ string) {
 	l.model.Filter(text)
-	l.updateTitle()
+	// Small delay to let filtering complete before updating title
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		l.app.QueueUpdateDraw(func() {
+			l.updateTitle()
+		})
+	}()
 }
 
 // BufferChanged indicates the buffer was changed.
@@ -259,6 +265,8 @@ func (l *Log) bindKeys() {
 		ui.KeyQ:         ui.NewKeyAction("Back", l.resetCmd, false),
 		ui.KeyShiftC:    ui.NewKeyAction("Clear", l.clearCmd, true),
 		ui.KeyM:         ui.NewKeyAction("Mark", l.markCmd, true),
+		ui.KeyN:         ui.NewKeyAction("Next Match", l.nextMatchCmd, true),
+		ui.KeyShiftN:    ui.NewKeyAction("Prev Match", l.prevMatchCmd, true),
 		ui.KeyS:         ui.NewKeyAction("Toggle AutoScroll", l.toggleAutoScrollCmd, true),
 		ui.KeyShiftL:    ui.NewKeyAction("Toggle ColumnLock", l.toggleColumnLockCmd, true),
 		ui.KeyF:         ui.NewKeyAction("Toggle FullScreen", l.toggleFullScreenCmd, true),
@@ -332,7 +340,13 @@ func (l *Log) updateTitle() {
 
 	buff := l.logs.cmdBuff.GetText()
 	if buff != "" {
-		title += ui.SkinTitle(fmt.Sprintf(ui.SearchFmt, buff), &styles)
+		// Add match count if filtering
+		current, total := l.model.GetMatchInfo()
+		if total > 0 {
+			title += ui.SkinTitle(fmt.Sprintf(ui.SearchFmt+" [[cadetblue:bg:b]%d/%d[-:bg:-]]", buff, current+1, total), &styles)
+		} else {
+			title += ui.SkinTitle(fmt.Sprintf(ui.SearchFmt, buff), &styles)
+		}
 	}
 	l.SetTitle(title)
 }
@@ -413,7 +427,13 @@ func (l *Log) filterCmd(evt *tcell.EventKey) *tcell.EventKey {
 
 	l.logs.cmdBuff.SetActive(false)
 	l.model.Filter(l.logs.cmdBuff.GetText())
-	l.updateTitle()
+	// Small delay to let filtering complete before updating title
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		l.app.QueueUpdateDraw(func() {
+			l.updateTitle()
+		})
+	}()
 
 	return nil
 }
@@ -474,6 +494,56 @@ func (l *Log) markCmd(*tcell.EventKey) *tcell.EventKey {
 	_, _, w, _ := l.GetRect()
 	_, _ = fmt.Fprintf(l.ansiWriter, "[%s:-:b]%s[-:-:-]\n", l.app.Styles.Views().Log.FgColor.String(), strings.Repeat("-", w-4))
 	l.follow = true
+
+	return nil
+}
+
+func (l *Log) nextMatchCmd(evt *tcell.EventKey) *tcell.EventKey {
+	if l.app.InCmdMode() {
+		return evt
+	}
+	if l.model.GetFilter() == "" {
+		l.app.Flash().Warn("No active filter. Press / to filter logs")
+		return nil
+	}
+
+	lineNum := l.model.NextMatch()
+	if lineNum < 0 {
+		l.app.Flash().Warn("No matches found")
+		return nil
+	}
+
+	// Scroll to the match
+	l.follow = false
+	l.indicator.ToggleAutoScroll()
+	l.indicator.Refresh()
+	l.logs.ScrollTo(lineNum, 0)
+	l.updateTitle()
+
+	return nil
+}
+
+func (l *Log) prevMatchCmd(evt *tcell.EventKey) *tcell.EventKey {
+	if l.app.InCmdMode() {
+		return evt
+	}
+	if l.model.GetFilter() == "" {
+		l.app.Flash().Warn("No active filter. Press / to filter logs")
+		return nil
+	}
+
+	lineNum := l.model.PrevMatch()
+	if lineNum < 0 {
+		l.app.Flash().Warn("No matches found")
+		return nil
+	}
+
+	// Scroll to the match
+	l.follow = false
+	l.indicator.ToggleAutoScroll()
+	l.indicator.Refresh()
+	l.logs.ScrollTo(lineNum, 0)
+	l.updateTitle()
 
 	return nil
 }

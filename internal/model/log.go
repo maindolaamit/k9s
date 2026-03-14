@@ -41,16 +41,18 @@ type LogsListener interface {
 
 // Log represents a resource logger.
 type Log struct {
-	factory      dao.Factory
-	lines        *dao.LogItems
-	listeners    []LogsListener
-	gvr          *client.GVR
-	logOptions   *dao.LogOptions
-	cancelFn     context.CancelFunc
-	mx           sync.RWMutex
-	filter       string
-	lastSent     int
-	flushTimeout time.Duration
+	factory        dao.Factory
+	lines          *dao.LogItems
+	listeners      []LogsListener
+	gvr            *client.GVR
+	logOptions     *dao.LogOptions
+	cancelFn       context.CancelFunc
+	mx             sync.RWMutex
+	filter         string
+	lastSent       int
+	flushTimeout   time.Duration
+	matchPositions []int
+	currentMatch   int
 }
 
 // NewLog returns a new model.
@@ -199,10 +201,55 @@ func (l *Log) ClearFilter() {
 func (l *Log) Filter(q string) {
 	l.mx.Lock()
 	l.filter = q
+	l.currentMatch = 0
+	l.matchPositions = nil
 	l.mx.Unlock()
 
 	l.fireLogCleared()
 	l.fireLogBuffChanged(0)
+}
+
+// GetMatchInfo returns current match position and total matches.
+func (l *Log) GetMatchInfo() (current, total int) {
+	l.mx.RLock()
+	defer l.mx.RUnlock()
+
+	return l.currentMatch, len(l.matchPositions)
+}
+
+// NextMatch moves to the next match and returns its line number.
+func (l *Log) NextMatch() int {
+	l.mx.Lock()
+	defer l.mx.Unlock()
+
+	if len(l.matchPositions) == 0 {
+		return -1
+	}
+	l.currentMatch = (l.currentMatch + 1) % len(l.matchPositions)
+	return l.matchPositions[l.currentMatch]
+}
+
+// PrevMatch moves to the previous match and returns its line number.
+func (l *Log) PrevMatch() int {
+	l.mx.Lock()
+	defer l.mx.Unlock()
+
+	if len(l.matchPositions) == 0 {
+		return -1
+	}
+	l.currentMatch--
+	if l.currentMatch < 0 {
+		l.currentMatch = len(l.matchPositions) - 1
+	}
+	return l.matchPositions[l.currentMatch]
+}
+
+// GetFilter returns the current filter string.
+func (l *Log) GetFilter() string {
+	l.mx.RLock()
+	defer l.mx.RUnlock()
+
+	return l.filter
 }
 
 func (l *Log) cancel() {
@@ -334,23 +381,32 @@ func (l *Log) RemoveListener(listener LogsListener) {
 
 func (l *Log) applyFilter(index int, q string) ([][]byte, error) {
 	if q == "" {
+		l.matchPositions = nil
 		return nil, nil
 	}
 	matches, indices, err := l.lines.Filter(index, q, l.logOptions.ShowTimestamp)
 	if err != nil {
+		l.matchPositions = nil
 		return nil, err
 	}
 
 	// No filter!
 	if matches == nil {
+		l.matchPositions = nil
 		ll := make([][]byte, l.lines.Len())
 		l.lines.Render(index, l.logOptions.ShowTimestamp, ll)
 		return ll, nil
 	}
 	// Blank filter
 	if len(matches) == 0 {
+		l.matchPositions = nil
 		return nil, nil
 	}
+
+	// Track match positions for navigation
+	l.matchPositions = matches
+	l.currentMatch = 0
+
 	filtered := make([][]byte, 0, len(matches))
 	ll := make([][]byte, l.lines.Len())
 	l.lines.Lines(index, l.logOptions.ShowTimestamp, ll)
