@@ -258,7 +258,6 @@ func (a *App) bindKeys() {
 		ui.KeyRightBracket: ui.NewSharedKeyAction("Go Forward", a.nextCommand, false),
 		ui.KeyDash:         ui.NewSharedKeyAction("Last View", a.lastCommand, false),
 		ui.KeyShiftA:       ui.NewSharedKeyAction("Aliases", a.aliasCmd, false),
-		tcell.KeyCtrlA:     ui.NewSharedKeyAction("Toggle AsUser", a.toggleImpersonateCmd, false),
 		tcell.KeyEnter:     ui.NewKeyAction("Goto", a.gotoCmd, false),
 		tcell.KeyCtrlC:     ui.NewKeyAction("Quit", a.quitCmd, false),
 	}
@@ -792,32 +791,6 @@ func (a *App) aliasCmd(*tcell.EventKey) *tcell.EventKey {
 	if err := a.inject(NewAlias(client.AliGVR), false); err != nil {
 		a.Flash().Err(err)
 	}
-
-	return nil
-}
-
-func (a *App) toggleImpersonateCmd(*tcell.EventKey) *tcell.EventKey {
-	// Check if impersonation is currently active
-	currentUser, err := a.Conn().Config().ImpersonateUser()
-	if err == nil && currentUser != "" {
-		// Impersonation is active, turn it off
-		a.Conn().Config().SetImpersonateUser("")
-		a.Flash().Info("AsUser mode disabled")
-		a.clusterModel.Refresh()
-		return nil
-	}
-
-	// Impersonation is not active, get user from config or prompt
-	asUser := a.Config.K9s.AsUser
-	if asUser == "" {
-		a.Flash().Warn("AsUser not configured. Set 'asUser' in k9s config to use this feature.")
-		return nil
-	}
-
-	// Enable impersonation
-	a.Conn().Config().SetImpersonateUser(asUser)
-	a.Flash().Infof("AsUser mode enabled: %s", asUser)
-	a.clusterModel.Refresh()
 
 	return nil
 }

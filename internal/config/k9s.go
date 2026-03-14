@@ -53,7 +53,6 @@ type K9s struct {
 	Logger              Logger     `json:"logger" yaml:"logger"`
 	Thresholds          Threshold  `json:"thresholds" yaml:"thresholds"`
 	DefaultView         string     `json:"defaultView" yaml:"defaultView"`
-	AsUser              string     `json:"asUser" yaml:"asUser,omitempty"`
 	EnableCtrlE         bool       `json:"enableCtrlE" yaml:"enableCtrlE"`
 	EnableCtrlG         bool       `json:"enableCtrlG" yaml:"enableCtrlG"`
 	manualRefreshRate   float32
@@ -144,7 +143,6 @@ func (k *K9s) Merge(k1 *K9s) {
 	k.DefaultView = k1.DefaultView
 	k.ScreenDumpDir = k1.ScreenDumpDir
 	k.ScreenDumpSaveToCwd = k1.ScreenDumpSaveToCwd
-	k.AsUser = k1.AsUser
 	k.EnableCtrlE = k1.EnableCtrlE
 	k.EnableCtrlG = k1.EnableCtrlG
 	k.RefreshRate = k1.RefreshRate

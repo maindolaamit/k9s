@@ -65,7 +65,7 @@ func (c *ClusterInfo) hasMetrics() bool {
 }
 
 func (c *ClusterInfo) layout() {
-	for row, section := range []string{"Context", "Cluster", "User", "AsUser", "K9s Rev", "K8s Rev", "CPU", "MEM"} {
+	for row, section := range []string{"Context", "Cluster", "User", "K9s Rev", "K8s Rev", "CPU", "MEM"} {
 		c.SetCell(row, 0, c.sectionCell(section))
 		c.SetCell(row, 1, c.infoCell(render.NAValue))
 	}
@@ -122,11 +122,6 @@ func (c *ClusterInfo) ClusterInfoChanged(prev, curr *model.ClusterMeta) {
 		row := c.setCell(0, context)
 		row = c.setCell(row, curr.Cluster)
 		row = c.setCell(row, curr.User)
-		if curr.Impersonate != "" {
-			row = c.setCell(row, fmt.Sprintf("[yellow::b]%s", curr.Impersonate))
-		} else {
-			row = c.setCell(row, render.NAValue)
-		}
 		if curr.K9sLatest != "" {
 			row = c.setCell(row, fmt.Sprintf("%s ⚡️[cadetblue::b]%s", curr.K9sVer, curr.K9sLatest))
 		} else {
