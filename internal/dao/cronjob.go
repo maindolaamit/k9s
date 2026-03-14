@@ -44,33 +44,34 @@ func (c *CronJob) ListImages(_ context.Context, fqn string) ([]string, error) {
 }
 
 // Run a CronJob.
-func (c *CronJob) Run(path string) error {
+func (c *CronJob) Run(path string) (string, error) {
 	ns, n := client.Namespaced(path)
 	auth, err := c.Client().CanI(ns, client.JobGVR, n, []string{client.GetVerb, client.CreateVerb})
 	if err != nil {
-		return err
+		return "", err
 	}
 	if !auth {
-		return fmt.Errorf("user is not authorized to run jobs")
+		return "", fmt.Errorf("user is not authorized to run jobs")
 	}
 
 	o, err := c.getFactory().Get(c.gvr, path, true, labels.Everything())
 	if err != nil {
-		return err
+		return "", err
 	}
 	var cj batchv1.CronJob
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(o.(*unstructured.Unstructured).Object, &cj)
 	if err != nil {
-		return errors.New("expecting CronJob resource")
+		return "", errors.New("expecting CronJob resource")
 	}
 	jobName := cj.Name
 	if len(cj.Name) >= maxJobNameSize {
 		jobName = cj.Name[0:maxJobNameSize]
 	}
 	trueVal := true
+	createdJobName := jobName + "-manual-" + rand.String(3)
 	job := &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        jobName + "-manual-" + rand.String(3),
+			Name:        createdJobName,
 			Namespace:   ns,
 			Labels:      cj.Spec.JobTemplate.Labels,
 			Annotations: cj.Spec.JobTemplate.Annotations,
@@ -89,13 +90,16 @@ func (c *CronJob) Run(path string) error {
 	}
 	dial, err := c.Client().Dial()
 	if err != nil {
-		return err
+		return "", err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), c.Client().Config().CallTimeout())
 	defer cancel()
 	_, err = dial.BatchV1().Jobs(ns).Create(ctx, job, metav1.CreateOptions{})
+	if err != nil {
+		return "", err
+	}
 
-	return err
+	return client.FQN(ns, createdJobName), nil
 }
 
 // ScanSA scans for serviceaccount refs.

@@ -150,8 +150,8 @@ type Restartable interface {
 
 // Runnable represents a runnable resource.
 type Runnable interface {
-	// Run triggers a run.
-	Run(path string) error
+	// Run triggers a run and returns the created resource name.
+	Run(path string) (string, error)
 }
 
 // Logger represents a resource that exposes logs.

@@ -108,10 +108,11 @@ func (c *CronJob) triggerCmd(evt *tcell.EventKey) *tcell.EventKey {
 		}
 
 		for _, fqn := range fqns {
-			if err := runner.Run(fqn); err != nil {
+			jobName, err := runner.Run(fqn)
+			if err != nil {
 				c.App().Flash().Errf("CronJob trigger failed for %s: %v", fqn, err)
 			} else {
-				c.App().Flash().Infof("Triggered Job %s %s", c.GVR(), fqn)
+				c.App().Flash().Infof("Triggered Job: %s", jobName)
 			}
 		}
 	}, func() {})
